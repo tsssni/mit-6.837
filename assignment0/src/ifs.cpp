@@ -1,4 +1,7 @@
 #include "ifs.h"
+#include "vectors.h"
+#include "matrix.h"
+#include "image.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

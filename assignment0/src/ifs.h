@@ -1,6 +1,10 @@
-#include "utils/vectors.h"
-#include "utils/matrix.h"
-#include "utils/image.h"
+#ifndef _IFS_H_
+#define _IFS_H_
+
+#include <stdio.h>
+
+class Image;
+class Matrix;
 
 class IFS
 {
@@ -16,3 +20,5 @@ private:
     Matrix* mat = nullptr;
     float* p = nullptr;
 };
+
+#endif

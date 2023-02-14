@@ -1,5 +1,5 @@
 #include "ifs.h"
-#include "utils/image.h"
+#include "image.h"
 #include <stdio.h>
 #include <string.h>
 
