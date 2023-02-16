@@ -30,8 +30,12 @@ bool Sphere::intersect(const Ray &r, Hit &h, float tmin)
 
         if (t1 > tmin || t2 > tmin)
         {
-	    float t=t1 > tmin ? t1 : t2;
-            h.set(t, mat, r);
+            float t = t1 > tmin ? t1 : t2;
+            Vec3f p = r.pointAtParameter(t);
+            Vec3f n = p - center;
+            n.Normalize();
+
+            h.set(t, mat, n, r);
             intersected = true;
         }
     }
