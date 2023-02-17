@@ -6,6 +6,7 @@ class Transform : public Object3D
 public:
     Transform(const Matrix &m, Object3D *o);
     virtual bool intersect(const Ray &r, Hit &h, float tmin) override;
+    virtual void paint() override;
 
 protected:
     Matrix worldTransform;

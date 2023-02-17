@@ -2,6 +2,8 @@
 #include "ray.h"
 #include "hit.h"
 #include "matrix.h"
+#include "material.h"
+#include <GL/gl.h>
 #include <math.h>
 #include <stdio.h>
 
@@ -49,4 +51,12 @@ bool Triangle::intersect(const Ray &r, Hit &h, float tmin)
     }
 
     return intersected;
+}
+
+void Triangle::paint()
+{
+    glBegin(GL_TRIANGLES);
+    mat->glSetMaterial();
+    glFlatShade(normal, a, b, c);
+    glEnd();
 }

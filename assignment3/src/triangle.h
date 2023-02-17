@@ -6,6 +6,7 @@ class Triangle : public Object3D
 public:
     Triangle(const Vec3f &_a, const Vec3f &_b, const Vec3f &_c, Material *m);
     virtual bool intersect(const Ray &r, Hit &h, float tmin) override;
+    virtual void paint() override;
 
 protected:
     Vec3f a;

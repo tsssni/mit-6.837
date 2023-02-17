@@ -12,8 +12,8 @@ public:
     void addObject(int index, Object3D *object);
 
 protected:
-    Object3D** objects;
-    int num_objects;
+    Object3D **objects;
+    int numObjects;
 };
 
 #endif

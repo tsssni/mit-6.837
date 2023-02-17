@@ -34,6 +34,14 @@ bool Group::intersect(const Ray &r, Hit &h, float tmin)
     return intersected;
 }
 
+void Group::paint()
+{
+    for (int i = 0; i < numObjects; ++i)
+    {
+        objects[i]->paint();
+    }
+}
+
 void Group::addObject(int index, Object3D *object)
 {
     assert(index < numObjects);

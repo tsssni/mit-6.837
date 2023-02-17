@@ -5,13 +5,13 @@
 #include <float.h>
 
 Group::Group(int num)
-    : objects(new Object3D*[num]), num_objects(num)
+    : objects(new Object3D *[num]), numObjects(num)
 {
 }
 
 Group::~Group()
 {
-    if(objects)
+    if (objects)
     {
         delete[] objects;
     }
@@ -22,7 +22,7 @@ bool Group::intersect(const Ray &r, Hit &h, float tmin)
     bool intersected = false;
     Hit temp_h(FLT_MAX, nullptr);
 
-    for (int i = 0; i < num_objects; ++i)
+    for (int i = 0; i < numObjects; ++i)
     {
         if (objects[i]->intersect(r, temp_h, tmin) && temp_h.getT() < h.getT())
         {
@@ -36,6 +36,6 @@ bool Group::intersect(const Ray &r, Hit &h, float tmin)
 
 void Group::addObject(int index, Object3D *object)
 {
-    assert(index < num_objects);
+    assert(index < numObjects);
     objects[index] = object;
 }

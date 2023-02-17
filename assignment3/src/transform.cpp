@@ -1,6 +1,7 @@
 #include "transform.h"
 #include "ray.h"
 #include "hit.h"
+#include <GL/gl.h>
 
 Transform::Transform(const Matrix &m, Object3D *o)
     : worldTransform(m), object(o)
@@ -38,4 +39,15 @@ bool Transform::intersect(const Ray &r, Hit &h, float tmin)
     }
 
     return intersected;
+}
+
+void Transform::paint()
+{
+    glPushMatrix();
+    GLfloat *gl_mat = worldTransform.glGet();
+    glMultMatrixf(gl_mat);
+    delete[] gl_mat;
+
+    object->paint();
+    glPopMatrix();
 }
