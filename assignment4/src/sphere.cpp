@@ -36,8 +36,8 @@ Sphere::Sphere(const Vec3f &_center, float _radius, Material *m)
             int i = (i_phi - 1) * tess_theta + i_theta;
             vertex[i] += center +
                          Vec3f(radius * sin_phi * sin_theta,
-                          radius * cos_phi,
-                          radius * sin_phi * cos_theta);
+                               radius * cos_phi,
+                               radius * sin_phi * cos_theta);
 
             if (gouraud)
             {
@@ -50,12 +50,12 @@ Sphere::Sphere(const Vec3f &_center, float _radius, Material *m)
 
 Sphere::~Sphere()
 {
-    if(vertex)
+    if (vertex)
     {
         delete[] vertex;
     }
 
-    if(normal)
+    if (normal)
     {
         delete[] normal;
     }

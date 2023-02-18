@@ -6,6 +6,8 @@
 #include "material.h"
 #include "light.h"
 #include "glCanvas.h"
+#include "ray_tracer.h"
+#include "ray_tree.h"
 #include <GL/glut.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,13 +18,18 @@ char *input_file = NULL;
 int width = 100;
 int height = 100;
 char *output_file = NULL;
-int tess_phi;
-int tess_theta;
-bool gui;
-bool gouraud;
+int tess_phi = 1;
+int tess_theta = 1;
+bool shade_back = false;
+bool gui = false;
+bool gouraud = false;
+bool shadows = false;
+int bounces = 0;
+float weight = 0.01f;
 
 SceneParser *scene;
 GLCanvas *gl_canvas;
+RayTracer *ray_tracer;
 
 void parse(int argc, char **argv)
 {
@@ -58,13 +65,33 @@ void parse(int argc, char **argv)
             assert(i < argc);
             tess_phi = atoi(argv[i]);
         }
+        else if (!strcmp(argv[i], "-shade_back"))
+        {
+            shade_back = true;
+        }
         else if (!strcmp(argv[i], "-gui"))
         {
             gui = true;
         }
-        else if (!strcmp(argv[i], "-gouroud"))
+        else if (!strcmp(argv[i], "-gouraud"))
         {
             gouraud = true;
+        }
+        else if (!strcmp(argv[i], "-shadows"))
+        {
+            shadows = true;
+        }
+        else if (!strcmp(argv[i], "-bounces"))
+        {
+            ++i;
+            assert(i < argc);
+            bounces = atoi(argv[i]);
+        }
+        else if (!strcmp(argv[i], "-weight"))
+        {
+            ++i;
+            assert(i < argc);
+            weight = atof(argv[i]);
         }
         else
         {
@@ -91,45 +118,34 @@ void Render()
             Ray r = scene->getCamera()->generateRay(point);
             Hit h(FLT_MAX, nullptr, {0.f, 0.f, 0.f});
 
-            if (scene->getGroup()->intersect(r, h, scene->getCamera()->getTMin()))
-            {
-                if (-1.f * r.getDirection().Dot3(h.getNormal()) > 0.f)
-                {
-                    Vec3f color = scene->getAmbientLight() * h.getMaterial()->getDiffuseColor();
-
-                    for (int i = 0; i < scene->getNumLights(); ++i)
-                    {
-                        Vec3f dir;
-                        Vec3f col;
-                        float dist;
-                        scene->getLight(i)->getIllumination({}, dir, col, dist);
-
-                        color += h.getMaterial()->Shade(r, h, dir, col);
-                    }
-
-                    output_img.SetPixel(i, j, color);
-                }
-            }
-            else
-            {
-                output_img.SetPixel(i, j, scene->getBackgroundColor());
-            }
+            output_img.SetPixel(i, j, ray_tracer->traceRay(r, scene->getCamera()->getTMin(), 0, 1.f, 1.f, h));
         }
     }
 
     output_img.SaveTGA(output_file);
 }
 
+void RayTrace(float x, float y)
+{
+    Ray r = scene->getCamera()->generateRay({x, y});
+    Hit h(FLT_MAX, nullptr, {0.f, 0.f, 0.f});
+
+    ray_tracer->traceRay(r, scene->getCamera()->getTMin(), 0, 1.f, 1.f, h);
+    RayTree::SetMainSegment(r, scene->getCamera()->getTMin(), h.getT());
+}
+
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
     parse(argc, argv);
+
     scene = new SceneParser(input_file);
+    ray_tracer = new RayTracer(scene, bounces, weight, shadows);
 
     if (gui)
     {
         gl_canvas = new GLCanvas();
-        gl_canvas->initialize(scene, Render);
+        gl_canvas->initialize(scene, Render, RayTrace);
     }
     else
     {
@@ -139,6 +155,11 @@ int main(int argc, char **argv)
     if (gl_canvas)
     {
         delete gl_canvas;
+    }
+
+    if (ray_tracer)
+    {
+        delete ray_tracer;
     }
 
     if (scene)

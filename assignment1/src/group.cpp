@@ -20,10 +20,11 @@ Group::~Group()
 bool Group::intersect(const Ray &r, Hit &h, float tmin)
 {
     bool intersected = false;
-    Hit temp_h(FLT_MAX, nullptr);
 
     for (int i = 0; i < numObjects; ++i)
     {
+        Hit temp_h(FLT_MAX, nullptr);
+
         if (objects[i]->intersect(r, temp_h, tmin) && temp_h.getT() < h.getT())
         {
             intersected = true;
