@@ -2,7 +2,6 @@
 .vscode/
 .xmake/
 build/
-output/
 data/
 
 # MacOS Cache
