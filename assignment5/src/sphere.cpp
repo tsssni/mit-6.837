@@ -2,8 +2,14 @@
 #include "ray.h"
 #include "hit.h"
 #include "material.h"
+#include "bounding_box.h"
+#include "grid.h"
 #include <GL/gl.h>
 #include <math.h>
+
+extern int tess_phi;
+extern int tess_theta;
+extern bool gouraud;
 
 Sphere::Sphere(const Vec3f &_center, float _radius, Material *m)
     : center(_center), radius(_radius)
@@ -43,6 +49,8 @@ Sphere::Sphere(const Vec3f &_center, float _radius, Material *m)
             }
         }
     }
+
+    boundingBox = new BoundingBox({center - Vec3f{radius, radius, radius}}, {center + Vec3f{radius, radius, radius}});
 }
 
 Sphere::~Sphere()
@@ -91,6 +99,28 @@ bool Sphere::intersect(const Ray &r, Hit &h, float tmin)
     }
 
     return intersected;
+}
+
+void Sphere::insertIntoGrid(Grid *g, Matrix *m)
+{
+    Vec3f cell_info = g->getCellInfo();
+    float cell_diag = .5f * sqrtf(powf(cell_info.x(), 2.f) +
+                                  powf(cell_info.y(), 2.f) +
+                                  powf(cell_info.z(), 2.f));
+
+    for (int i = 0; i < g->getX(); ++i)
+    {
+        for (int j = 0; j < g->getY(); ++j)
+        {
+            for (int k = 0; k < g->getZ(); ++k)
+            {
+                if ((g->getCellCenter(i, j, k) - center).Length() < radius + cell_diag)
+                {
+                    g->setCell(i, j, k, this);
+                }
+            }
+        }
+    }
 }
 
 void Sphere::paint()

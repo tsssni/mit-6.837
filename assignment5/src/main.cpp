@@ -6,6 +6,9 @@
 #include "material.h"
 #include "light.h"
 #include "glCanvas.h"
+#include "ray_tracer.h"
+#include "ray_tree.h"
+#include "grid.h"
 #include <GL/glut.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,13 +19,23 @@ char *input_file = NULL;
 int width = 100;
 int height = 100;
 char *output_file = NULL;
-int tess_phi;
-int tess_theta;
-bool gui;
-bool gouraud;
+int tess_phi = 1;
+int tess_theta = 1;
+bool shade_back = false;
+bool gui = false;
+bool gouraud = false;
+bool shadows = false;
+int bounces = 0;
+float weight = 0.01f;
+int nx = 0;
+int ny = 0;
+int nz = 0;
+bool visualize_grid = false;
 
-SceneParser *scene;
-GLCanvas *gl_canvas;
+SceneParser *scene = nullptr;
+Grid *grid = nullptr;
+GLCanvas *gl_canvas = nullptr;
+RayTracer *ray_tracer = nullptr;
 
 void parse(int argc, char **argv)
 {
@@ -58,6 +71,10 @@ void parse(int argc, char **argv)
             assert(i < argc);
             tess_phi = atoi(argv[i]);
         }
+        else if (!strcmp(argv[i], "-shade_back"))
+        {
+            shade_back = true;
+        }
         else if (!strcmp(argv[i], "-gui"))
         {
             gui = true;
@@ -65,6 +82,38 @@ void parse(int argc, char **argv)
         else if (!strcmp(argv[i], "-gouraud"))
         {
             gouraud = true;
+        }
+        else if (!strcmp(argv[i], "-shadows"))
+        {
+            shadows = true;
+        }
+        else if (!strcmp(argv[i], "-bounces"))
+        {
+            ++i;
+            assert(i < argc);
+            bounces = atoi(argv[i]);
+        }
+        else if (!strcmp(argv[i], "-weight"))
+        {
+            ++i;
+            assert(i < argc);
+            weight = atof(argv[i]);
+        }
+        else if (!strcmp(argv[i], "-grid"))
+        {
+            ++i;
+            assert(i < argc);
+            nx = atoi(argv[i]);
+            ++i;
+            assert(i < argc);
+            ny = atoi(argv[i]);
+            ++i;
+            assert(i < argc);
+            nz = atoi(argv[i]);
+        }
+        else if(!strcmp(argv[i],"-visualize_grid"))
+        {
+            visualize_grid = true;
         }
         else
         {
@@ -76,7 +125,7 @@ void parse(int argc, char **argv)
 
 void Render()
 {
-    if(!output_file)
+    if (!output_file)
     {
         return;
     }
@@ -90,46 +139,44 @@ void Render()
             Vec2f point(1.f * i / width, 1.f * j / width);
             Ray r = scene->getCamera()->generateRay(point);
             Hit h(FLT_MAX, nullptr, {0.f, 0.f, 0.f});
-
-            if (scene->getGroup()->intersect(r, h, scene->getCamera()->getTMin()))
-            {
-                if (-1.f * r.getDirection().Dot3(h.getNormal()) > 0.f)
-                {
-                    Vec3f color = scene->getAmbientLight() * h.getMaterial()->getDiffuseColor();
-
-                    for (int i = 0; i < scene->getNumLights(); ++i)
-                    {
-                        Vec3f dir;
-                        Vec3f col;
-                        float dist;
-                        scene->getLight(i)->getIllumination({}, dir, col, dist);
-
-                        color += h.getMaterial()->Shade(r, h, dir, col);
-                    }
-
-                    output_img.SetPixel(i, j, color);
-                }
-            }
-            else
-            {
-                output_img.SetPixel(i, j, scene->getBackgroundColor());
-            }
+            
+            output_img.SetPixel(i, j, ray_tracer->traceRay(r, scene->getCamera()->getTMin(), 0, 1.f, 1.f, h));
         }
     }
 
     output_img.SaveTGA(output_file);
 }
 
+void RayTrace(float x, float y)
+{
+    Ray r = scene->getCamera()->generateRay({x, y});
+    Hit h(FLT_MAX, nullptr, {0.f, 0.f, 0.f});
+
+    ray_tracer->traceRay(r, scene->getCamera()->getTMin(), 0, 1.f, 1.f, h);
+    RayTree::SetMainSegment(r, scene->getCamera()->getTMin(), h.getT());
+
+    grid->intersect(r, h, FLT_MAX);
+}
+
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
     parse(argc, argv);
+
     scene = new SceneParser(input_file);
+
+    if (nx && ny && nz)
+    {
+        grid = new Grid(scene->getGroup()->getBoundingBox(), nx, ny, nz);
+        scene->getGroup()->insertIntoGrid(grid, nullptr);
+    }
+
+    ray_tracer = new RayTracer(scene, grid, bounces, weight, shadows);
 
     if (gui)
     {
         gl_canvas = new GLCanvas();
-        gl_canvas->initialize(scene, Render);
+        gl_canvas->initialize(scene, Render, RayTrace, grid, visualize_grid);
     }
     else
     {
@@ -139,6 +186,16 @@ int main(int argc, char **argv)
     if (gl_canvas)
     {
         delete gl_canvas;
+    }
+
+    if (ray_tracer)
+    {
+        delete ray_tracer;
+    }
+
+    if (grid)
+    {
+        delete grid;
     }
 
     if (scene)

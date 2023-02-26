@@ -15,11 +15,8 @@ Sphere::Sphere(const Vec3f &_center, float _radius, Material *m)
 
     if (gouraud)
     {
-        northNormal = northPole;
-        northNormal.Normalize();
-
-        southNormal = southPole;
-        southNormal.Normalize();
+        northNormal = {0.f, 1.f, 0.f};
+        southNormal = {0.f, -1.f, 0.f};
 
         normal = new Vec3f[(tess_phi - 1) * tess_theta];
     }
@@ -34,7 +31,7 @@ Sphere::Sphere(const Vec3f &_center, float _radius, Material *m)
             float sin_theta = sinf(i_theta * 2.f * M_PI / tess_theta);
 
             int i = (i_phi - 1) * tess_theta + i_theta;
-            vertex[i] += center +
+            vertex[i] = center +
                          Vec3f(radius * sin_phi * sin_theta,
                           radius * cos_phi,
                           radius * sin_phi * cos_theta);
@@ -160,22 +157,22 @@ void Sphere::paint()
     for (int i_phi = 1; i_phi < tess_phi - 1; ++i_phi)
     {
         int start = (i_phi - 1) * tess_theta;
-        int start_next = (i_phi)*tess_theta;
+        int start_next = i_phi * tess_theta;
 
         for (int i_theta = 0; i_theta < tess_theta; ++i_theta)
         {
             int i_theta_next = (i_theta + 1) % tess_theta;
-            const Vec3f &v0 = vertex[start + i_theta];
-            const Vec3f &v1 = vertex[start + i_theta_next];
-            const Vec3f &v2 = vertex[start_next + i_theta_next];
-            const Vec3f &v3 = vertex[start_next + i_theta];
+            const Vec3f &v0 = vertex[start + i_theta_next];
+            const Vec3f &v1 = vertex[start + i_theta];
+            const Vec3f &v2 = vertex[start_next + i_theta];
+            const Vec3f &v3 = vertex[start_next + i_theta_next];
 
             if (gouraud)
             {
-                const Vec3f &n0 = normal[start + i_theta];
-                const Vec3f &n1 = normal[start + i_theta_next];
-                const Vec3f &n2 = normal[start_next + i_theta_next];
-                const Vec3f &n3 = normal[start_next + i_theta];
+                const Vec3f &n0 = normal[start + i_theta_next];
+                const Vec3f &n1 = normal[start + i_theta];
+                const Vec3f &n2 = normal[start_next + i_theta];
+                const Vec3f &n3 = normal[start_next + i_theta_next];
 
                 glGouroudShade(n0, v0, n1, v1, n2, v2, n3, v3);
             }

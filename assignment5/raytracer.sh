@@ -1,0 +1,1 @@
+sudo -E ./build/linux/x86_64/debug/raytracer -input data/scene5_04_plane_test.txt -size 200 200 -gui -tessellation 30 15 -gouraud
