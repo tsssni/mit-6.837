@@ -67,7 +67,7 @@ void Group::addObject(int index, Object3D *object)
             boundingBox = new BoundingBox(*object->getBoundingBox());
         }
         else
-        {
+        {   
             boundingBox->Extend(object->getBoundingBox());
         }
     }

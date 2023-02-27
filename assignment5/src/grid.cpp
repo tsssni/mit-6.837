@@ -325,7 +325,7 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin)
     float r_tmin = fmax(tmin_axes.x(), fmax(tmin_axes.y(), tmin_axes.z()));
     float r_tmax = fmin(tmax_axes.x(), fmin(tmax_axes.y(), tmax_axes.z()));
 
-    if (r_tmax > 0.f)
+    if (r_tmax > 0.f && r_tmax > r_tmin)
     {
         Vec3f p = getCellPos(r_tmin > 0.f ? r.pointAtParameter(r_tmin) : r.getOrigin());
         Vec3f normal = getTNormal(r_tmin, tmin_axes, r.getDirection());

@@ -4,8 +4,11 @@
 #include "material.h"
 #include "bounding_box.h"
 #include "grid.h"
+#include "matrix.h"
+#include "transform.h"
 #include <GL/gl.h>
 #include <math.h>
+#include <float.h>
 
 extern int tess_phi;
 extern int tess_theta;
@@ -38,9 +41,9 @@ Sphere::Sphere(const Vec3f &_center, float _radius, Material *m)
 
             int i = (i_phi - 1) * tess_theta + i_theta;
             vertex[i] = center +
-                         Vec3f(radius * sin_phi * sin_theta,
-                          radius * cos_phi,
-                          radius * sin_phi * cos_theta);
+                        Vec3f(radius * sin_phi * sin_theta,
+                              radius * cos_phi,
+                              radius * sin_phi * cos_theta);
 
             if (gouraud)
             {
@@ -103,10 +106,8 @@ bool Sphere::intersect(const Ray &r, Hit &h, float tmin)
 
 void Sphere::insertIntoGrid(Grid *g, Matrix *m)
 {
-    Vec3f cell_info = g->getCellInfo();
-    float cell_diag = .5f * sqrtf(powf(cell_info.x(), 2.f) +
-                                  powf(cell_info.y(), 2.f) +
-                                  powf(cell_info.z(), 2.f));
+    Matrix objSpaceTransform = *m;
+    objSpaceTransform.Inverse();
 
     for (int i = 0; i < g->getX(); ++i)
     {
@@ -114,7 +115,13 @@ void Sphere::insertIntoGrid(Grid *g, Matrix *m)
         {
             for (int k = 0; k < g->getZ(); ++k)
             {
-                if ((g->getCellCenter(i, j, k) - center).Length() < radius + cell_diag)
+                BoundingBox cell_box = getTransformedBoundingBox(g->getCellBox(i, j, k), objSpaceTransform);
+                Vec3f cell_box_min = cell_box.getMin();
+                Vec3f cell_box_max = cell_box.getMax();
+                Vec3f cell_box_center = (cell_box_min + cell_box_max) * .5f;
+                float cell_diag = .5f * (cell_box_max - cell_box_min).Length();
+
+                if ((cell_box_center - center).Length() < radius + cell_diag)
                 {
                     g->setCell(i, j, k, this);
                 }

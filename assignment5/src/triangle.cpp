@@ -69,6 +69,18 @@ bool Triangle::intersect(const Ray &r, Hit &h, float tmin)
 
 void Triangle::insertIntoGrid(Grid *g, Matrix *m)
 {
+    Vec3f v[3] = {a, b, c};
+    m->Transform(v[0]);
+    m->Transform(v[1]);
+    m->Transform(v[2]);
+
+    Vec3f e[3] = {v[1] - v[0], v[2] - v[1], v[0] - v[2]};
+    
+    Vec3f normal;
+    Vec3f::Cross3(normal, e[0], e[1]);
+    normal.Normalize();
+    float d = v[0].Dot3(normal);
+
     for (int i = 0; i < g->getX(); ++i)
     {
         for (int j = 0; j < g->getY(); ++j)
@@ -77,7 +89,7 @@ void Triangle::insertIntoGrid(Grid *g, Matrix *m)
             {
                 BoundingBox box = g->getCellBox(i, j, k);
 
-                if (testBoundingBoxIntersectsWithTriangle(box))
+                if (testBoundingBoxIntersectsWithTriangle(box, v, e, normal, d))
                 {
                     g->setCell(i, j, k, this);
                 }
@@ -103,7 +115,7 @@ bool Triangle::testPointInTriangle(const Vec3f &p)
     return u >= -EPLISON && v >= -EPLISON && w >= -EPLISON;
 }
 
-bool Triangle::testBoundingBoxIntersectsWithTriangle(const BoundingBox &box)
+bool Triangle::testBoundingBoxIntersectsWithTriangle(const BoundingBox &box, Vec3f v[3], Vec3f edge[3], const Vec3f& normal, float d)
 {
     // seperating axis theorem
 
@@ -111,18 +123,16 @@ bool Triangle::testBoundingBoxIntersectsWithTriangle(const BoundingBox &box)
     Vec3f box_max = box.getMax();
     Vec3f center = (box_min + box_max) * .5f;
 
-    Vec3f vert[3] = {a, b, c};
-    Vec3f edge[3] = {edgeA, edgeB, edgeC};
-
     box_min -= center;
     box_max -= center;
+
+    Vec3f vert[3] = {v[0], v[1], v[2]};
     vert[0] -= center;
     vert[1] -= center;
     vert[2] -= center;
 
     // 3 tests on bounding-box normals
 
-    Vec3f box_normal[3] = {{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}};
     for (int i = 0; i < 3; ++i)
     {
         float box_p[3] = {vert[0][i], vert[1][i], vert[2][i]};
@@ -140,12 +150,14 @@ bool Triangle::testBoundingBoxIntersectsWithTriangle(const BoundingBox &box)
     float s = center.Dot3(normal) - d;
     float e = box_max.Dot3(Vec3f(fabs(normal.x()), fabs(normal.y()), fabs(normal.z())));
 
-    if (s + e < 0.f || s - e > 0.f)
+    if (s + e < -EPLISON || s - e > EPLISON)
     {
         return false;
     }
 
     // 9 tests on cross product of triangle edges with aabb normals
+
+    Vec3f box_normal[3] = {{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}};
 
     for (int i = 0; i < 3; ++i)
     {
@@ -155,12 +167,12 @@ bool Triangle::testBoundingBoxIntersectsWithTriangle(const BoundingBox &box)
             Vec3f::Cross3(cross_a, box_normal[i], edge[j]);
             cross_a.Normalize();
 
-            float t_p[3] = {cross_a.Dot3(edge[0]), cross_a.Dot3(edge[1]), cross_a.Dot3(edge[2])};
+            float t_p[3] = {cross_a.Dot3(vert[0]), cross_a.Dot3(vert[1]), cross_a.Dot3(vert[2])};
             float p_min = fmin(t_p[0], fmin(t_p[1], t_p[2]));
             float p_max = fmax(t_p[0], fmax(t_p[1], t_p[2]));
 
             float r = box_max.Dot3(Vec3f(fabs(cross_a.x()), fabs(cross_a.y()), fabs(cross_a.z())));
-            if (p_min > r || p_max < -r)
+            if (p_min > r + EPLISON || p_max < -r - EPLISON)
             {
                 return false;
             }

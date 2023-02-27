@@ -6,12 +6,12 @@ class Triangle : public Object3D
 public:
     Triangle(const Vec3f &_a, const Vec3f &_b, const Vec3f &_c, Material *m);
     virtual bool intersect(const Ray &r, Hit &h, float tmin) override;
-    virtual void insertIntoGrid(Grid *g, Matrix *m);
+    virtual void insertIntoGrid(Grid *g, Matrix *m) override;
     virtual void paint() override;
 
 protected:
     bool testPointInTriangle(const Vec3f &p);
-    bool testBoundingBoxIntersectsWithTriangle(const BoundingBox &box);
+    bool testBoundingBoxIntersectsWithTriangle(const BoundingBox &box, Vec3f v[3], Vec3f edge[3], const Vec3f& normal, float d);
 
     Vec3f a;
     Vec3f b;

@@ -9,6 +9,7 @@
 #include "ray_tracer.h"
 #include "ray_tree.h"
 #include "grid.h"
+#include "matrix.h"
 #include <GL/glut.h>
 #include <stdio.h>
 #include <string.h>
@@ -111,7 +112,7 @@ void parse(int argc, char **argv)
             assert(i < argc);
             nz = atoi(argv[i]);
         }
-        else if(!strcmp(argv[i],"-visualize_grid"))
+        else if (!strcmp(argv[i], "-visualize_grid"))
         {
             visualize_grid = true;
         }
@@ -139,7 +140,7 @@ void Render()
             Vec2f point(1.f * i / width, 1.f * j / width);
             Ray r = scene->getCamera()->generateRay(point);
             Hit h(FLT_MAX, nullptr, {0.f, 0.f, 0.f});
-            
+
             output_img.SetPixel(i, j, ray_tracer->traceRay(r, scene->getCamera()->getTMin(), 0, 1.f, 1.f, h));
         }
     }
@@ -155,7 +156,10 @@ void RayTrace(float x, float y)
     ray_tracer->traceRay(r, scene->getCamera()->getTMin(), 0, 1.f, 1.f, h);
     RayTree::SetMainSegment(r, scene->getCamera()->getTMin(), h.getT());
 
-    grid->intersect(r, h, FLT_MAX);
+    if (visualize_grid)
+    {
+        grid->intersect(r, h, FLT_MAX);
+    }
 }
 
 int main(int argc, char **argv)
@@ -168,7 +172,9 @@ int main(int argc, char **argv)
     if (nx && ny && nz)
     {
         grid = new Grid(scene->getGroup()->getBoundingBox(), nx, ny, nz);
-        scene->getGroup()->insertIntoGrid(grid, nullptr);
+        Matrix identity;
+        identity.SetToIdentity();
+        scene->getGroup()->insertIntoGrid(grid, &identity);
     }
 
     ray_tracer = new RayTracer(scene, grid, bounces, weight, shadows);
