@@ -1,0 +1,1 @@
+sudo -E ./build/linux/x86_64/debug/raytracer -input data/scene6_12_faceted_gem.txt -size 200 200 -output output/output6_12b.tga -shadows -shade_back -bounces 5 -weight 0.01 -grid 20 20 20 -stats
