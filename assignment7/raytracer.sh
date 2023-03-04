@@ -1,0 +1,1 @@
+sudo -E ./build/linux/x86_64/debug/raytracer -input input/scene7_01_sphere_triangle.txt -size 9 9 -render_samples output/samples7_01i.tga 20 -jittered_samples 36
