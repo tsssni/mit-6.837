@@ -1,1 +1,1 @@
-sudo -E ./build/linux/x86_64/debug/raytracer -input data/scene5_12_nested_transformations.txt -size 200 200 -output output/output5_12.tga -gui -grid 30 30 30 -visualize_grid
+sudo -E ./build/linux/x86_64/debug/raytracer -input input/scene5_12_nested_transformations.txt -size 200 200 -output output/output5_12.tga -gui -grid 30 30 30 -visualize_grid

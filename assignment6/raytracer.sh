@@ -1,1 +1,1 @@
-sudo -E ./build/linux/x86_64/debug/raytracer -input data/scene6_18_6.837_logo.txt -size 400 200 -output output/output6_18b.tga -grid 80 30 3 -visualize_grid
+sudo -E ./build/linux/x86_64/debug/raytracer -input input/scene6_18_6.837_logo.txt -size 400 200 -output output/output6_18b.tga -grid 80 30 3 -visualize_grid

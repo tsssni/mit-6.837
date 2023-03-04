@@ -1,1 +1,1 @@
-sudo -E ./build/linux/x64/debug/raytracer -input data/scene4_14_faceted_gem.txt -size 200 200 -output output/output4_14f.tga -shadows -shade_back -bounces 5 -weight 0.01
+sudo -E ./build/linux/x64/debug/raytracer -input input/scene4_14_faceted_gem.txt -size 200 200 -output output/output4_14f.tga -shadows -shade_back -bounces 5 -weight 0.01
