@@ -120,7 +120,7 @@ void parse(int argc, char **argv)
         {
             visualize_grid = true;
         }
-        else if(!strcmp(argv[i], "-stats"))
+        else if (!strcmp(argv[i], "-stats"))
         {
             stats = true;
         }
@@ -140,12 +140,24 @@ void Render()
     }
 
     Image output_img(width, height);
+    int size = fmax(width, height);
+    int start_i = 0;
+    int start_j = 0;
+
+    if (width == size)
+    {
+        start_j = (width >> 1) - (height >> 1);
+    }
+    else
+    {
+        start_i = (height >> 1) - (width >> 1);
+    }
 
     for (int i = 0; i < width; ++i)
     {
         for (int j = 0; j < height; ++j)
         {
-            Vec2f point(1.f * i / width, 1.f * j / height);
+            Vec2f point(1.f * (i + start_i) / size, 1.f * (j + start_j) / size);
             Ray r = scene->getCamera()->generateRay(point);
             Hit h(FLT_MAX, nullptr, {0.f, 0.f, 0.f});
 
@@ -155,7 +167,7 @@ void Render()
 
     output_img.SaveTGA(output_file);
 
-    if(stats)
+    if (stats)
     {
         RayTracingStats::PrintStatistics();
     }
@@ -179,14 +191,14 @@ int main(int argc, char **argv)
 {
     parse(argc, argv);
 
-    if(gui)
+    if (gui)
     {
         glutInit(&argc, argv);
     }
 
     scene = new SceneParser(input_file);
 
-    if(stats)
+    if (stats)
     {
         RayTracingStats::Initialize(width, height, scene->getGroup()->getBoundingBox(), nx, ny, nz);
     }

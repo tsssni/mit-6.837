@@ -70,15 +70,14 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
     if ((!grid && RayCast(scene, ray, hit, tmin)) ||
         (grid && RayCastFast(scene_grid, ray, hit, tmin)))
     {
-        PhongMaterial *mat = dynamic_cast<PhongMaterial *>(hit.getMaterial());
-        color += scene->getAmbientLight() * mat->getDiffuseColor();
+        color += scene->getAmbientLight() * hit.getMaterial()->getDiffuseColor(hit.getIntersectionPoint());
 
-        if (mat && bounces < max_bounces && weight > cutoff_weight)
+        if (bounces < max_bounces && weight > cutoff_weight)
         {
             bool inside = ray.getDirection().Dot3(hit.getNormal()) > 0.f;
             Vec3f normal = inside ? -1.f * hit.getNormal() : hit.getNormal();
 
-            Vec3f reflect_col = mat->getReflectiveColor();
+            Vec3f reflect_col = hit.getMaterial()->getReflectiveColor(hit.getIntersectionPoint());
 
             if (reflect_col.r() > 0.f || reflect_col.g() > 0.f || reflect_col.b() > 0.f)
             {
@@ -92,8 +91,8 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
                 }
             }
 
-            Vec3f refract_col = mat->getTransparentColor();
-            float index_t = inside ? 1.f : mat->getIndexOfRefraction();
+            Vec3f refract_col = hit.getMaterial()->getTransparentColor(hit.getIntersectionPoint());
+            float index_t = inside ? 1.f : hit.getMaterial()->getIndexOfRefraction(hit.getIntersectionPoint());
             Vec3f transmitted_dir;
 
             if ((refract_col.r() > 0.f || refract_col.g() > 0.f || refract_col.b() > 0.f) &&
