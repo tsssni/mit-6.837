@@ -1,1 +1,1 @@
-![mit 6.837](https://i3.lensdump.com/i/TBp3Cz.png)
+![mit 6.837](https://i1.lensdump.com/i/TBxLPi.png)
