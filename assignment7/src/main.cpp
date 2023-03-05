@@ -37,13 +37,13 @@ int nx = 0;
 int ny = 0;
 int nz = 0;
 bool visualize_grid = false;
-bool stats;
-int num_samples;
-char *samples_file;
-int sample_zoom;
-float sigma;
-char *filter_file;
-int filter_zoom;
+bool stats = false;
+int num_samples = 1;
+char *samples_file = nullptr;
+int sample_zoom = 1;
+float sigma = 1.f;
+char *filter_file = nullptr;
+int filter_zoom = 1.f;
 
 SceneParser *scene = nullptr;
 Grid *scene_grid = nullptr;
@@ -169,21 +169,21 @@ void parse(int argc, char **argv)
         {
             ++i;
             assert(i < argc);
-            float radius = atoi(argv[i]);
+            float radius = atof(argv[i]);
             filter = new BoxFilter(radius);
         }
         else if (!strcmp(argv[i], "-tent_filter"))
         {
             ++i;
             assert(i < argc);
-            float radius = atoi(argv[i]);
+            float radius = atof(argv[i]);
             filter = new TentFilter(radius);
         }
         else if (!strcmp(argv[i], "-gaussian_filter"))
         {
             ++i;
             assert(i < argc);
-            float sigma = atoi(argv[i]);
+            float sigma = atof(argv[i]);
             filter = new GaussianFilter(sigma);
         }
         else if (!strcmp(argv[i], "-render_filter"))
@@ -205,7 +205,7 @@ void parse(int argc, char **argv)
 
 void Render()
 {
-    if (!output_file && !samples_file)
+    if (!output_file && !samples_file && !filter_file)
     {
         return;
     }
@@ -247,7 +247,7 @@ void Render()
         {
             for (int j = 0; j < height; ++j)
             {
-                filter->getColor(i, j, &film);
+                image.SetPixel(i, j, filter->getColor(i, j, &film));
             }
         }
     }
@@ -318,7 +318,7 @@ int main(int argc, char **argv)
 
     if (!filter)
     {
-        filter = new BoxFilter(1);
+        filter = new BoxFilter(.5f);
     }
 
     ray_tracer = new RayTracer(scene, scene_grid, bounces, weight, shadows);

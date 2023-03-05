@@ -1,1 +1,1 @@
-sudo -E ./build/linux/x86_64/debug/raytracer -input input/scene7_01_sphere_triangle.txt -size 9 9 -render_samples output/samples7_01i.tga 20 -jittered_samples 36
+sudo -E ./build/linux/x86_64/debug/raytracer -input input/scene7_06_faceted_gem.txt -size 200 200 -output output/output7_06b.tga -shadows -shade_back -bounces 5 -weight 0.01 -grid 20 20 20 -jittered_samples 9 -gaussian_filter 0.4
