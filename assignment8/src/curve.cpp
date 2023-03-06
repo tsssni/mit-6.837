@@ -74,6 +74,61 @@ Vec3f Curve::getVertex(int i)
     return vertices[i];
 }
 
+void Curve::moveControlPoint(int selectedPoint, float x, float y)
+{
+    assert(vertices);
+    setVertex(selectedPoint, {x, y, 0.f});
+}
+
+void Curve::addControlPoint(int selectedPoint, float x, float y)
+{
+    assert(vertices);
+    Vec3f *old_points = vertices;
+    Vec3f *new_points = new Vec3f[numVertices + 1];
+
+    for (int i = selectedPoint + 1; i < numVertices + 1; ++i)
+    {
+        new_points[i] = old_points[i - 1];
+    }
+
+    for (int i = 0; i < selectedPoint; ++i)
+    {
+        new_points[i] = old_points[i];
+    }
+
+    new_points[selectedPoint] = {x, y, 0.f};
+    numVertices += 1;
+    vertices = new_points;
+    delete[] old_points;
+}
+
+void Curve::deleteControlPoint(int selectedPoint)
+{
+    assert(vertices);
+    Vec3f *old_points = vertices;
+    vertices = NULL;
+
+    if (numVertices > 1)
+    {
+        Vec3f *new_points = new Vec3f[numVertices - 1];
+
+        for (int i = selectedPoint; i < numVertices - 1; ++i)
+        {
+            new_points[i] = old_points[i + 1];
+        }
+
+        for (int i = 0; i < selectedPoint; ++i)
+        {
+            new_points[i] = old_points[i];
+        }
+
+        vertices = new_points;
+    }
+
+    numVertices -= 1;
+    delete[] old_points;
+}
+
 BezierCurve::BezierCurve(int num)
     : Curve(num)
 {
@@ -129,7 +184,7 @@ void BezierCurve::initBasis()
 void BezierCurve::OutputBezier(FILE *file)
 {
     fprintf(file, "\nbezier");
-    fprintf(file, "\nnum_vertices 4\n");
+    fprintf(file, "\nnum_vertices %d\n", numVertices);
 
     for (int i = 0; i < numVertices; ++i)
     {
@@ -140,7 +195,7 @@ void BezierCurve::OutputBezier(FILE *file)
 void BezierCurve::OutputBSpline(FILE *file)
 {
     fprintf(file, "\nbspline");
-    fprintf(file, "\nnum_vertices 4\n");
+    fprintf(file, "\nnum_vertices %d\n", numVertices);
 
     auto bspline_basis_inv = BSplineCurve::basis;
     bspline_basis_inv.Inverse();
@@ -224,7 +279,7 @@ void BSplineCurve::initBasis()
 void BSplineCurve::OutputBezier(FILE *file)
 {
     fprintf(file, "\nbezier");
-    fprintf(file, "\nnum_vertices 4\n");
+    fprintf(file, "\nnum_vertices %d\n", numVertices);
 
     auto bezier_basis_inv = BezierCurve::basis;
     bezier_basis_inv.Inverse();
@@ -254,7 +309,7 @@ void BSplineCurve::OutputBezier(FILE *file)
 void BSplineCurve::OutputBSpline(FILE *file)
 {
     fprintf(file, "\nbspline");
-    fprintf(file, "\nnum_vertices 4\n");
+    fprintf(file, "\nnum_vertices %d\n", numVertices);
 
     for (int i = 0; i < numVertices; ++i)
     {

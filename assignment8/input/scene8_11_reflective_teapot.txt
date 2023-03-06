@@ -86,7 +86,7 @@ Group {
 
     MaterialIndex 0
     TriangleMesh {
-        obj_file teapot_high.obj
+        obj_file output/teapot_high.obj
     }
 
     MaterialIndex 7

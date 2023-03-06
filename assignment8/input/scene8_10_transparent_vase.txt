@@ -57,7 +57,7 @@ Group {
 
     MaterialIndex 0
     TriangleMesh {
-        obj_file vase_very_high.obj
+        obj_file output/vase_very_high.obj
     }
 
     MaterialIndex 3

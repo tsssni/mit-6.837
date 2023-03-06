@@ -14,8 +14,8 @@ public:
     virtual void Paint(ArgParser *args) = 0;
 
     // FOR CONVERTING BETWEEN SPLINE TYPES
-    virtual void OutputBezier(FILE *file);
-    virtual void OutputBSpline(FILE *file);
+    virtual void OutputBezier(FILE *file) = 0;
+    virtual void OutputBSpline(FILE *file) = 0;
 
     // FOR CONTROL POINT PICKING
     virtual int getNumVertices() = 0;
@@ -23,9 +23,9 @@ public:
     virtual void setVertex(int i, const Vec3f &v) = 0;
 
     // FOR EDITING OPERATIONS
-    virtual void moveControlPoint(int selectedPoint, float x, float y);
-    virtual void addControlPoint(int selectedPoint, float x, float y);
-    virtual void deleteControlPoint(int selectedPoint);
+    virtual void moveControlPoint(int selectedPoint, float x, float y) = 0;
+    virtual void addControlPoint(int selectedPoint, float x, float y) = 0;
+    virtual void deleteControlPoint(int selectedPoint) = 0;
 
     // FOR GENERATING TRIANGLES
     virtual TriangleMesh *OutputTriangles(ArgParser *args);

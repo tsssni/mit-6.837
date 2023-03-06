@@ -1,3 +1,6 @@
+#ifndef _PLANE_H_
+#define _PLANE_H_
+
 #include "object3d.h"
 #include "vectors.h"
 
@@ -16,3 +19,4 @@ protected:
     Vec3f b1;
     Vec3f b2;
 };
+#endif

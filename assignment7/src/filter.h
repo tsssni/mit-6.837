@@ -1,3 +1,6 @@
+#ifndef _FILTER_H_
+#define _FILTER_H_
+
 #include "vectors.h"
 
 class Film;
@@ -42,3 +45,4 @@ public:
 protected:
     float sigma;
 };
+#endif

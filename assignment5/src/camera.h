@@ -1,5 +1,6 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
+
 #include "vectors.h"
 
 class Ray;

@@ -1,5 +1,6 @@
 #ifndef _GROUP_H_
 #define _GROUP_H_
+
 #include "object3d.h"
 
 class Group : public Object3D

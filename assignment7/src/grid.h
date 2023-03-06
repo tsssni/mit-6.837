@@ -1,3 +1,6 @@
+#ifndef _GRID_H_
+#define _GRID_H_
+
 #include "object3d.h"
 #include "vectors.h"
 #include "bounding_box.h"
@@ -96,3 +99,4 @@ protected:
     float nh;
     float nw;
 };
+#endif

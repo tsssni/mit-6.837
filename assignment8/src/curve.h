@@ -15,10 +15,12 @@ public:
 
     virtual int getNumVertices() override;
     virtual Vec3f getVertex(int i) override;
-
-protected:
     virtual Vec3f getCurve(float t) = 0;
     virtual int getTessellation(int tess) = 0;
+
+    virtual void moveControlPoint(int selectedPoint, float x, float y) override;
+    virtual void addControlPoint(int selectedPoint, float x, float y) override;
+    virtual void deleteControlPoint(int selectedPoint) override;
 };
 
 class BSplineCurve;
@@ -33,8 +35,6 @@ public:
 
     virtual void OutputBezier(FILE *file) override;
     virtual void OutputBSpline(FILE *file) override;
-
-protected:
     virtual Vec3f getCurve(float t) override;
     virtual int getTessellation(int tess) override;
 
@@ -51,8 +51,6 @@ public:
 
     virtual void OutputBezier(FILE *file) override;
     virtual void OutputBSpline(FILE *file) override;
-
-protected:
     virtual Vec3f getCurve(float t) override;
     virtual int getTessellation(int tess) override;
 

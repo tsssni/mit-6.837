@@ -1,3 +1,6 @@
+#ifndef _TRIANGLE_H_
+#define _TRIANGLE_H_
+
 #include "object3d.h"
 #include "vectors.h"
 
@@ -29,3 +32,4 @@ protected:
     float d;
     float area;
 };
+#endif

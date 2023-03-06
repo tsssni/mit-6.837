@@ -31,6 +31,6 @@ Group {
 
     MaterialIndex 0
     TriangleMesh {
-        obj_file teapot_low.obj
+        obj_file output/teapot_low.obj
     }
 }

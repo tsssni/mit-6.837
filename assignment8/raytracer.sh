@@ -1,0 +1,1 @@
+sudo -E ../assignment7/build/linux/x86_64/debug/raytracer -input input/scene8_07_vase_high.txt -gui -size 300 300

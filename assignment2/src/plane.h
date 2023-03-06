@@ -1,3 +1,6 @@
+#ifndef _PLANE_H_
+#define _PLANE_H_
+
 #include "object3d.h"
 #include "vectors.h"
 
@@ -11,3 +14,4 @@ protected:
     Vec3f normal;
     float d;
 };
+#endif

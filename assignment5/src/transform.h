@@ -1,3 +1,6 @@
+#ifndef _TRANSFORM_H_
+#define _TRANSFORM_H_
+
 #include "object3d.h"
 #include "matrix.h"
 
@@ -18,3 +21,4 @@ protected:
     Matrix objectTransform;
     Object3D *object;
 };
+#endif
