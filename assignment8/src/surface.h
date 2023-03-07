@@ -38,10 +38,13 @@ protected:
     Curve *curve;
 };
 
+class BezierCurve;
+
 class BezierPatch : public Surface
 {
 public:
     BezierPatch();
+    ~BezierPatch();
     virtual void Paint(ArgParser *args) override;
 
     virtual void OutputBezier(FILE *file);
@@ -56,5 +59,8 @@ public:
     virtual void deleteControlPoint(int selectedPoint) override;
     
     virtual TriangleMesh *OutputTriangles(ArgParser *args);
+
+protected:
+    BezierCurve **curves;
 };
 #endif

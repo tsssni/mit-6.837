@@ -1,1 +1,1 @@
-sudo -E ../assignment7/build/linux/x86_64/debug/raytracer -input input/scene8_07_vase_high.txt -gui -size 300 300
+sudo -E ../assignment7/build/linux/x86_64/debug/raytracer -input input/scene8_11_reflective_teapot.txt -output output/output8_11.tga -grid 50 30 30 -size 300 300 -bounces 4 -shade_back -jittered_samples 9 -tent_filter 1.0 -shadows

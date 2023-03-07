@@ -79,19 +79,46 @@ void SurfaceOfRevolution::deleteControlPoint(int selectedPoint)
 
 BezierPatch::BezierPatch()
 {
+    curves = new BezierCurve*[4];
+
+    for (int i = 0; i < 4;++i)
+    {
+        curves[i] = new BezierCurve(4);
+    }
 }
 
 void BezierPatch::Paint(ArgParser *args)
 {
+    for (int i = 0; i < 4;++i)
+    {
+        curves[i]->Paint(args);
+    }
 }
 
 void BezierPatch::setVertex(int i, const Vec3f &v)
 {
+    curves[i / 4]->setVertex(i % 4, v);
 }
 
 TriangleMesh *BezierPatch::OutputTriangles(ArgParser *args)
 {
-    return nullptr;
+    net = new TriangleNet(args->patch_tessellation, args->patch_tessellation);
+
+    for (int i = 0; i <= args->patch_tessellation;++i)
+    {
+        BezierCurve curve(4);
+        for (int j = 0; j < 4;++j)
+        {
+            curve.setVertex(j, curves[j]->getCurve(1.f * i / args->patch_tessellation));
+        }
+
+        for (int j = 0; j <= args->patch_tessellation;++j)
+        {
+            net->SetVertex(i, j, curve.getCurve(1.f * j / args->patch_tessellation));
+        }
+    }
+
+    return net;
 }
 
 void BezierPatch::moveControlPoint(int selectedPoint, float x, float y)
@@ -100,6 +127,19 @@ void BezierPatch::moveControlPoint(int selectedPoint, float x, float y)
 
 void BezierPatch::addControlPoint(int selectedPoint, float x, float y)
 {
+}
+
+BezierPatch::~BezierPatch()
+{
+    for (int i = 0; i < 4;++i)
+    {
+        if(curves[i])
+        {
+            delete curves[i];
+        }
+    }
+
+    delete[] curves;
 }
 
 void BezierPatch::deleteControlPoint(int selectedPoint)
