@@ -38,7 +38,9 @@ void IFS::Read(FILE *F)
 
 void IFS::Render(Image &img, int num_points, int num_iters)
 {
-    Vec3f color(.5f, .5f, .5f);
+    static Vec3f white(1.f, 1.f, 1.f);
+    static Vec3f black(0.f, 0.f, 0.f);
+    img.SetAllPixels(white);
 
     for (int i = 0; i < num_points; ++i)
     {
@@ -56,7 +58,7 @@ void IFS::Render(Image &img, int num_points, int num_iters)
             img.SetPixel(
                 pt.x() * img.Width(),
                 pt.y() * img.Height(),
-                color);
+                black);
         }
     }
 }

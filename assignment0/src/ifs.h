@@ -20,5 +20,4 @@ private:
     Matrix* mat = nullptr;
     float* p = nullptr;
 };
-
 #endif
