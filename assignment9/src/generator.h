@@ -18,7 +18,7 @@ public:
     virtual Particle *Generate(float current_time, int i) = 0;
 
     // for the gui
-    void Paint() const;
+    virtual void Paint() const = 0;
     void Restart();
 
 protected:
@@ -41,6 +41,7 @@ public:
     HoseGenerator(const Vec3f &position, float position_randomness, const Vec3f &velocity, float velocity_randomness);
     virtual int numNewParticles(float current_time, float dt) override;
     virtual Particle *Generate(float current_time, int i) override;
+    virtual void Paint() const override;
 
 protected:
     Vec3f position;
@@ -56,6 +57,7 @@ public:
     RingGenerator(float position_randomness, const Vec3f& velocity, float velocity_randomness);
     virtual int numNewParticles(float current_time, float dt) override;
     virtual Particle *Generate(float current_time, int i) override;
+    virtual void Paint() const override;
 
 protected:
     float positionRandomness = 0.f;

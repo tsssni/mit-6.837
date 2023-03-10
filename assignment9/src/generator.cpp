@@ -2,6 +2,7 @@
 #include "particle.h"
 #include "random.h"
 #include <GL/gl.h>
+#include <random.h>
 
 Random randomGenerator;
 
@@ -26,12 +27,9 @@ void Generator::SetMass(float _mass, float mass_randomness)
     massRandomness = mass_randomness;
 }
 
-void Generator::Paint() const
-{
-}
-
 void Generator::Restart()
 {
+    randomGenerator = Random(randomGenerator.next() * RAND_MAX);
 }
 
 HoseGenerator::HoseGenerator(const Vec3f& _position, float position_randomness, const Vec3f& _velocity, float velocity_randomness)
@@ -59,9 +57,9 @@ int RingGenerator::numNewParticles(float current_time, float dt)
 
 Particle *RingGenerator::Generate(float current_time, int i)
 {
-    Vec3f generate_position = Vec3f(current_time * cosf(2.f * M_PI *  i / numParticles),
-                                    current_time * sinf(2.f * M_PI *  i / numParticles),
-                                    0.f) +
+    Vec3f generate_position = Vec3f(current_time * cosf(2.f * M_PI * i / numParticles),
+                                    0.f,
+                                    current_time * sinf(2.f * M_PI * i / numParticles)) +
                               positionRandomness * randomGenerator.randomVector();
     Vec3f generate_velocity = velocity + velocityRandomness * randomGenerator.randomVector();
     Vec3f generate_color = color + colorRandomness * randomGenerator.randomVector();
@@ -92,9 +90,29 @@ Particle *HoseGenerator::Generate(float current_time, int i)
     float generate_lifespan = lifespan + lifespanRandomness * randomGenerator.next();
 
     return new Particle(generate_position,
-                          generate_velocity,
-                          generate_color,
-                          generate_dead_color,
-                          generate_mass,
-                          generate_lifespan);
+                        generate_velocity,
+                        generate_color,
+                        generate_dead_color,
+                        generate_mass,
+                        generate_lifespan);
+}
+
+void HoseGenerator::Paint() const
+{
+}
+
+void RingGenerator::Paint() const
+{
+    glEnable(GL_COLOR_MATERIAL);
+    glColor3f(1.f, 1.f, 1.f);
+    glBegin(GL_QUADS);
+
+    glNormal3f(0.f, 1.f, 0.f);
+    glVertex3f(-5.f, 0.f, -5.f);
+    glVertex3f(-5.f, 0.f, 5.f);
+    glVertex3f(5.f, 0.f, 5.f);
+    glVertex3f(5.f, 0.f, -5.f);
+
+    glEnd();
+    glDisable(GL_COLOR_MATERIAL);
 }
