@@ -1,0 +1,1 @@
+sudo -E ./build/linux/x86_64/debug/raytracer -input input/scene3_09_exponent_variations.txt -size 300 300 -output output/output3_09.tga -gui -tessellation 100 50 -gouraud

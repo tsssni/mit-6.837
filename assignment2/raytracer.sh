@@ -1,0 +1,1 @@
+sudo -E ./build/linux/x64/debug/raytracer -input input/scene2_16_t_scale.txt -size 200 200 -output output/output2_16.tga -depth 2 7 depth2_16.tga
