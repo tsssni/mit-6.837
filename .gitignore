@@ -1,2 +1,11 @@
+# Vscode Cache
 .vscode
+
+# Xmake Cache
+.xmake
+build
+
+# MacOS Cache
+.DS_Store
+
 github_token
